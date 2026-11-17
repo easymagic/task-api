@@ -1,0 +1,21 @@
+# Loaded when the "test" profile is active (see @ActiveProfiles on the integration test).
+# Datasource URL is injected by Testcontainers @ServiceConnection when Docker is available.
+
+app:
+  kafka:
+    enabled: false
+
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+  kafka:
+    listener:
+      auto-startup: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    com.example.taskapi: DEBUG

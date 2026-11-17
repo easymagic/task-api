@@ -1,0 +1,8 @@
+# Loaded when spring.profiles.active=dev (the default).
+# Like a local .env: noisier logs, still the same database settings unless you override them.
+
+logging:
+  level:
+    com.example.taskapi: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG

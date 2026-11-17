@@ -1,0 +1,25 @@
+# Build
+target/
+*.class
+*.jar
+*.war
+!**/src/**/target/
+
+# Maven wrapper jar is committed; local repo is not
+.mvn/wrapper/maven-wrapper.jar.md5
+
+# IDE
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+*.swp
+
+# OS / env
+.DS_Store
+.env
+.env.*
+!.env.example
+*.log

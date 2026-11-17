@@ -1,0 +1,94 @@
+# =============================================================================
+# application.yml  ≈  Laravel's .env + config/*.php rolled into one place.
+# Values here can be overridden by environment variables, e.g.:
+#   SPRING_DATASOURCE_URL, SPRING_DATASOURCE_USERNAME, APP_JWT_SECRET
+# Relaxed binding: app.jwt.secret  ↔  APP_JWT_SECRET
+# =============================================================================
+
+spring:
+  application:
+    name: task-api
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/taskdb
+    username: taskuser
+    password: taskpass
+
+  jpa:
+    # validate = Hibernate checks the schema matches our entities, but does not
+    # change it. Flyway owns the schema, just like Laravel migrations do.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: true
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+  # Java 21 virtual threads for Tomcat request handling (week 2 topic).
+  # Safe to leave on for this API; turn off if a library is not virtual-thread friendly.
+  threads:
+    virtual:
+      enabled: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: task-api
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.example.taskapi.dto
+        spring.json.value.default.type: com.example.taskapi.dto.TaskCreatedEvent
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+server:
+  port: 8080
+
+# Actuator: operational endpoints. /actuator/health is public; metrics require a JWT.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: task-api
+    description: Starter Spring Boot API for learning Java backend development
+
+app:
+  jwt:
+    # Learning default only. Override with APP_JWT_SECRET in any real environment.
+    # HS256 needs at least 32 bytes (256 bits).
+    secret: "change-me-in-production-use-a-256-bit-secret-key!"
+    expiration-ms: 86400000
+  kafka:
+    # Weeks 3–4: leave this false and run with Postgres only.
+    # Week 5: start Kafka (see docker-compose) and set APP_KAFKA_ENABLED=true.
+    enabled: false
+    topic:
+      task-created: task.created
+
+logging:
+  level:
+    root: INFO
+    com.example.taskapi: INFO
